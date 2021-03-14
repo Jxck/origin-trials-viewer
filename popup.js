@@ -1,8 +1,9 @@
-chrome.tabs.getSelected(null, (tab) => {
+chrome.tabs.getSelected(null, async (tab) => {
+  console.error(tab)
   const $  = document.querySelector.bind(document)
   const $$ = document.querySelectorAll.bind(document)
 
-  chrome.tabs.sendRequest(tab.id, {msg: "getTokens"}, (tokens) => {
+  chrome.tabs.executeScript({ file: 'test.js' }, ([tokens]) => {
     if (tokens.length > 0) {
       $('#no-token').remove()
     }
