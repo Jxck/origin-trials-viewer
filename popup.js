@@ -3,25 +3,32 @@ chrome.tabs.getSelected(null, (tab) => {
   const $$ = document.querySelectorAll.bind(document)
 
   chrome.tabs.sendRequest(tab.id, {msg: "getTokens"}, (tokens) => {
+    if (tokens.length > 0) {
+      $('#no-token').remove()
+    }
     tokens.forEach((token) => {
       const payload = token.payload
 
-      $('.feature').textContent = payload.feature
+      const $clone = $('template').content.cloneNode(true)
 
-      $('.origin + dd > a').href        = payload.origin
-      $('.origin + dd > a').textContent = payload.origin
+      $clone.querySelector('.feature').textContent = payload.feature
+
+      $clone.querySelector('.origin + dd > a').href        = payload.origin
+      $clone.querySelector('.origin + dd > a').textContent = payload.origin
 
       const expiry = new Date(payload.expiry * 1000)
 
-      $('.expiry + dd > time').datetime    = expiry.toLocaleString()
-      $('.expiry + dd > time').textContent = expiry.toLocaleString()
+      $clone.querySelector('.expiry + dd > time').datetime    = expiry.toLocaleString()
+      $clone.querySelector('.expiry + dd > time').textContent = expiry.toLocaleString()
 
       if (expiry < new Date()) {
-        $('.expiry + dd').classList.add('expired')
+        $clone.querySelector('.expiry + dd').classList.add('expired')
       }
 
-      $('.subdomain  + dd').textContent = !!payload.isSubdomain
-      $('.thirdparty + dd').textContent = !!payload.isThirdParty
+      $clone.querySelector('.subdomain  + dd').textContent = !!payload.isSubdomain
+      $clone.querySelector('.thirdparty + dd').textContent = !!payload.isThirdParty
+
+      $('#tokens').appendChild($clone)
     })
   })
 })

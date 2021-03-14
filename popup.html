@@ -21,6 +21,10 @@ body {
   border-radius: 2px;
 }
 
+.token:not(:nth-child(1)) {
+  margin-top: 1rem;
+}
+
 .token h1 {
   margin: 0;
   text-align: center;
@@ -78,9 +82,22 @@ body {
 .thirdparty + dd {
   grid-area: t-value;
 }
+
+#no-token {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+  margin: 1rem 0;
+}
+
+footer {
+  text-align: right;
+  color: #666;
+}
 </style>
 
-<div id=tokens>
+<template>
   <div class=token>
     <h1 class=feature></h1>
     <dl>
@@ -90,6 +107,13 @@ body {
       <dt class=thirdparty>3rd Party</dt><dd></dd>
     </dl>
   </div>
+</template>
+
+
+<div id=no-token>
+  No Origin Trials Token available on this page
 </div>
+
+<div id=tokens></div>
 
 <script src=popup.js></script>
