@@ -1,0 +1,13 @@
+{
+  "name": "origin-trials-viewer",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "git archive HEAD --output=build.zip"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jxck/ot-viewer.git"
+  },
+  "author": "Jxck",
+  "license": "MIT"
+}
