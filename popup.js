@@ -15,12 +15,43 @@ function decodeToken(token) {
   return {version, signature, length, payload}
 }
 
-chrome.tabs.executeScript({ file: 'tab.js' }, ([tokens]) => {
-  if (tokens.length > 0) {
-    $('#no-token').remove()
+let tokens = [];
+hasHeaderToken = false;
+
+chrome.tabs.executeScript({ file: 'tab.js' }, ([metaTokens]) => {
+  console.log('meta tokens:', metaTokens);
+  tokens = tokens.concat(metaTokens);
+})
+
+chrome.tabs.reload();
+
+chrome.webRequest.onHeadersReceived.addListener((details) => {
+  const originTrialHeader = details.responseHeaders.find(header => header.name === 'origin-trial')
+  if (originTrialHeader) {
+    console.log('originTrialHeader.value:', originTrialHeader.value); 
+    // Only record one origin trial header. There may be an origin trial header for every response.
+    if (!hasHeaderToken) {
+      tokens.push({
+        type: 'header', 
+        value: originTrialHeader.value,
+      });
+      hasHeaderToken = true; 
+    } 
   }
+}, {urls: ['<all_urls>']}, ['responseHeaders']);
+
+setTimeout(() => {
+  if (tokens.length === 0) {
+    $('#no-token').classList.remove('hidden');
+  } else {
+    displayTokens(tokens);
+  }
+}, 500);
+
+function displayTokens(tokens) {
   tokens.forEach((token) => {
-    const decoded_token = decodeToken(token)
+    console.log('token.value', token.value);
+    const decoded_token = decodeToken(token.value)
     const payload = decoded_token.payload
 
     const $clone = $('template').content.cloneNode(true)
@@ -39,9 +70,11 @@ chrome.tabs.executeScript({ file: 'tab.js' }, ([tokens]) => {
       $clone.querySelector('.expiry + dd').classList.add('expired')
     }
 
+    $clone.querySelector('.type  + dd').textContent = token.type
     $clone.querySelector('.subdomain  + dd').textContent = !!payload.isSubdomain
     $clone.querySelector('.thirdparty + dd').textContent = !!payload.isThirdParty
 
     $('#tokens').appendChild($clone)
   })
-})
+}
+

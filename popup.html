@@ -13,6 +13,10 @@ body {
   padding: 4px;
 }
 
+.hidden {
+  display: none;
+}
+
 .token {
   font-size: 1rem;
   margin: 0;
@@ -102,6 +106,7 @@ footer {
     <h1 class=feature></h1>
     <dl>
       <dt class=origin>origin</dt       ><dd><a href=></a></dd>
+      <dt class=type>type</dt           ><dd></dd>
       <dt class=expiry>expiry</dt       ><dd><time datetime></time></dd>
       <dt class=subdomain>subdomain</dt ><dd></dd>
       <dt class=thirdparty>3rd Party</dt><dd></dd>
@@ -110,7 +115,7 @@ footer {
 </template>
 
 
-<div id=no-token>
+<div id=no-token class=hidden>
   No Origin Trials Token available on this page
 </div>
 
