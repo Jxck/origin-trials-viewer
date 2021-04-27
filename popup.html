@@ -95,13 +95,18 @@ footer {
   text-align: right;
   color: #666;
 }
+
+.raw-token + dd {
+  overflow-wrap: anywhere;
+}
 </style>
 
-<template>
+<template id=token-item>
   <div class=token>
     <h1 class=feature></h1>
     <dl>
       <dt class=origin>origin</dt       ><dd><a href=></a></dd>
+      <dt class=type>type</dt           ><dd></dd>
       <dt class=expiry>expiry</dt       ><dd><time datetime></time></dd>
       <dt class=subdomain>subdomain</dt ><dd></dd>
       <dt class=thirdparty>3rd Party</dt><dd></dd>
@@ -109,6 +114,15 @@ footer {
   </div>
 </template>
 
+<template id=error-item>
+  <div class=token>
+    <h1 class=feature></h1>
+    <dl>
+      <dt class=type>type</dt><dd></dd>
+      <dt class=raw-token>token</dt><dd></dd>
+    </dl>
+  </div>
+</template>
 
 <div id=no-token>
   No Origin Trials Token available on this page
