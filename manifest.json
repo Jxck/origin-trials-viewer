@@ -15,9 +15,9 @@
   "permissions": [
     "activeTab",
     "webRequest",
-    "<all_urls>",
     "tabs",
-    "webNavigation"
+    "webNavigation",
+    "<all_urls>"
   ],
   "browser_action": {
     "default_icon": "img/64.png",

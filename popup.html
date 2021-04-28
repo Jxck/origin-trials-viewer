@@ -3,9 +3,6 @@
 <title>OT Token Viewer</title>
 
 <style>
-:root {
-}
-
 body {
   font-family: sans-serif;
   width: 30rem;
@@ -42,24 +39,6 @@ body {
   grid-gap: 8px 0;
   grid-template-columns: 1fr 5fr;
   grid-template-rows:    1fr 1rem 1rem 1rem;
-  grid-template-areas:   'o-tag o-value'
-                         'e-tag e-value'
-                         's-tag s-value'
-                         't-tag t-value'
-}
-
-.origin {
-  grid-area: o-tag;
-}
-.origin + dd {
-  grid-area: o-value;
-}
-
-.expiry {
-  grid-area: e-tag;
-}
-.expiry + dd {
-  grid-area: e-value;
 }
 
 .expired {
@@ -67,20 +46,6 @@ body {
 }
 .expired::after {
   content: " (expired)";
-}
-
-.subdomain {
-  grid-area: s-tag;
-}
-.subdomain + dd {
-  grid-area: s-value;
-}
-
-.thirdparty {
-  grid-area: t-tag;
-}
-.thirdparty + dd {
-  grid-area: t-value;
 }
 
 #no-token {

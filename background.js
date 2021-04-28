@@ -1,8 +1,9 @@
-var filters = {
+const filters = {
   urls: ["<all_urls>"],
   types: ["main_frame", "sub_frame"]
 };
 
+// we need 'var' for global scope
 var headers = {};
 
 chrome.webRequest.onHeadersReceived.addListener(function(details) {
@@ -11,10 +12,13 @@ chrome.webRequest.onHeadersReceived.addListener(function(details) {
   headers[details.tabId][details.frameId].response = details;
 }, filters, ["responseHeaders"]);
 
+// delete persisted headers when a tab is removed
 chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
 	delete headers[tabId];
 });
 
+// on navigation, check which frames still exist and delete persisted headers
+// for frames which do not exist anymore
 chrome.webNavigation.onCompleted.addListener(function(details) {
   chrome.webNavigation.getAllFrames({tabId: details.tabId}, function(framesInfo) {
     const currentFrames = framesInfo.map(frameInfo => frameInfo.frameId);
