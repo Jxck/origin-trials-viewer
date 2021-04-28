@@ -51,14 +51,16 @@ function displayToken(token) {
   }
 }
 
-let tokens = [];
-
 chrome.tabs.executeScript({ file: 'tab.js' }, ([metaTokens]) => {
-  tokens = tokens.concat(metaTokens);
+  metaTokens.forEach(displayToken);
+  if (metaTokens.length > 0) {
+    $('#no-token').remove()
+  }
 })
 
 chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
   chrome.webNavigation.getAllFrames({tabId: tabs[0].id}, function(framesInfo) {
+    let tokens = [];
     for (frameInfo of framesInfo) {
       const tabHeaders = chrome.extension.getBackgroundPage().headers[tabs[0].id];
       if (tabHeaders) {
