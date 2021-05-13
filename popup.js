@@ -44,19 +44,14 @@ function displayToken(token) {
   } catch (error) {
     console.log('error', error)
     const $error = $('template#error').content.cloneNode(true)
-    $error.querySelector('.feature').textContent = 'Malformed token'
+    $error.querySelector('.feature').textContent = 'Invalid token'
     $error.querySelector('.type  + dd').textContent = token.type
     $error.querySelector('.raw-token + dd').textContent = token.value
     $('#tokens').appendChild($error)
-  }
-}
-
-chrome.tabs.executeScript({ file: 'tab.js' }, ([metaTokens]) => {
-  metaTokens.forEach(displayToken)
-  if (metaTokens.length > 0) {
+  } finally {
     $('#no-token').remove()
   }
-})
+}
 
 function extractOT(responseHeaders = []) {
   return responseHeaders
@@ -67,6 +62,10 @@ function extractOT(responseHeaders = []) {
     // make each token to tuple with type
     .map((value) => ({ type: 'header', value }))
 }
+
+chrome.tabs.executeScript({ file: 'tab.js' }, ([metaTokens]) => {
+  metaTokens.forEach(displayToken)
+})
 
 chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
   const tabId = tabs[0].id
