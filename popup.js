@@ -1,18 +1,18 @@
-const $  = document.querySelector.bind(document)
+const $ = document.querySelector.bind(document)
 const $$ = document.querySelectorAll.bind(document)
 
 function base64decode(str) {
-  return new Uint8Array([...atob(str)].map(a => a.charCodeAt(0)));
+  return new Uint8Array([...atob(str)].map(a => a.charCodeAt(0)))
 }
 
 function decodeToken(token) {
-  const buf       = base64decode(token)
-  const view      = new DataView(buf.buffer)
-  const version   = view.getUint8()
+  const buf = base64decode(token)
+  const view = new DataView(buf.buffer)
+  const version = view.getUint8()
   const signature = buf.slice(1, 65)
-  const length    = view.getUint32(65, false)
-  const payload   = JSON.parse((new TextDecoder()).decode(buf.slice(69, 69+length)))
-  return {version, signature, length, payload}
+  const length = view.getUint32(65, false)
+  const payload = JSON.parse((new TextDecoder()).decode(buf.slice(69, 69 + length)))
+  return { version, signature, length, payload }
 }
 
 function displayToken(token) {
@@ -20,70 +20,63 @@ function displayToken(token) {
     const decoded_token = decodeToken(token.value)
     const payload = decoded_token.payload
 
-    const $clone = $('template#token-item').content.cloneNode(true)
+    const $token = $('template#token').content.cloneNode(true)
 
-    $clone.querySelector('.feature').textContent = payload.feature
+    $token.querySelector('.feature').textContent = payload.feature
 
-    $clone.querySelector('.origin + dd > a').href        = payload.origin
-    $clone.querySelector('.origin + dd > a').textContent = payload.origin
-    $clone.querySelector('.type  + dd').textContent = token.type
+    $token.querySelector('.origin + dd > a').href = payload.origin
+    $token.querySelector('.origin + dd > a').textContent = payload.origin
+    $token.querySelector('.type  + dd').textContent = token.type
 
     const expiry = new Date(payload.expiry * 1000)
 
-    $clone.querySelector('.expiry + dd > time').datetime    = expiry.toLocaleString()
-    $clone.querySelector('.expiry + dd > time').textContent = expiry.toLocaleString()
+    $token.querySelector('.expiry + dd > time').datetime = expiry.toLocaleString()
+    $token.querySelector('.expiry + dd > time').textContent = expiry.toLocaleString()
 
     if (expiry < new Date()) {
-      $clone.querySelector('.expiry + dd').classList.add('expired')
+      $token.querySelector('.expiry + dd').classList.add('expired')
     }
 
-    $clone.querySelector('.subdomain  + dd').textContent = !!payload.isSubdomain
-    $clone.querySelector('.thirdparty + dd').textContent = !!payload.isThirdParty
+    $token.querySelector('.subdomain  + dd').textContent = !!payload.isSubdomain
+    $token.querySelector('.thirdparty + dd').textContent = !!payload.isThirdParty
 
-    $('#tokens').appendChild($clone)
+    $('#tokens').appendChild($token)
   } catch (error) {
-    console.log('error', error);
-    const $clone = $('template#error-item').content.cloneNode(true)
-    $clone.querySelector('.feature').textContent = 'Malformed token'
-    $clone.querySelector('.type  + dd').textContent = token.type
-    $clone.querySelector('.raw-token + dd').textContent = token.value
-    $('#tokens').appendChild($clone)
+    console.log('error', error)
+    const $error = $('template#error').content.cloneNode(true)
+    $error.querySelector('.feature').textContent = 'Malformed token'
+    $error.querySelector('.type  + dd').textContent = token.type
+    $error.querySelector('.raw-token + dd').textContent = token.value
+    $('#tokens').appendChild($error)
   }
 }
 
 chrome.tabs.executeScript({ file: 'tab.js' }, ([metaTokens]) => {
-  metaTokens.forEach(displayToken);
+  metaTokens.forEach(displayToken)
   if (metaTokens.length > 0) {
     $('#no-token').remove()
   }
 })
 
-chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
-  chrome.webNavigation.getAllFrames({tabId: tabs[0].id}, function(framesInfo) {
-    let tokens = [];
-    for (frameInfo of framesInfo) {
-      const tabHeaders = chrome.extension.getBackgroundPage().headers[tabs[0].id];
-      if (tabHeaders) {
-        const frameHeaders = tabHeaders[frameInfo.frameId];
-        if (frameHeaders.response && frameHeaders.response.responseHeaders) {
-          const originTrialHeaders = frameHeaders.response.responseHeaders.filter((header) => header.name === 'origin-trial');
-          const headerTokens = originTrialHeaders.map((header) => header.value
-            .split(',')
-            .map(item=>item.trim())
-          ).flat()
-          .map(value => ({
-            value: value,
-            type: 'header',
-          }));
-          tokens = tokens.concat(headerTokens);
-        }
-      }
-    }
-    tokens.forEach(displayToken)
-    if (tokens.length > 0) {
-      $('#no-token').remove()
-    }
-  });
-});
+function extractOT(responseHeaders = []) {
+  return responseHeaders
+    // filter 'Origin-Trial' header only
+    .filter(({ name }) => name.toLowerCase() === 'origin-trial')
+    // split multiple token to array
+    .flatMap(({ value }) => value.split(',').map(item => item.trim()))
+    // make each token to tuple with type
+    .map((value) => ({ type: 'header', value }))
+}
 
-
+chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+  const tabId = tabs[0].id
+  const tabHeaders = chrome.extension.getBackgroundPage().headers[tabId]
+  chrome.webNavigation.getAllFrames({ tabId }, function (framesInfo) {
+    framesInfo.flatMap(({ frameId }) => {
+      const frameHeaders = tabHeaders[frameId]
+      return extractOT(frameHeaders?.response?.responseHeaders)
+    }).forEach((token) => {
+      displayToken(token)
+    })
+  })
+})
