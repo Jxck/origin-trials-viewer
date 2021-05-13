@@ -1,4 +1,4 @@
-import { base64decode, decodeToken, extractOT } from "./util.js"
+import { base64decode, base64encode, decodeToken, extractOT } from "./util.js"
 
 function assert(a, b) {
     console.log(a, b)
@@ -6,8 +6,8 @@ function assert(a, b) {
 }
 
 function test_base64decode() {
-    const bin = base64decode("QUJDREVGRw==")
-    assert(new TextDecoder().decode(bin), "ABCDEFG")
+    const base64 = "QUJDREVGRw=="
+    assert(base64encode(base64decode(base64)), base64)
 }
 
 function test_decodeToken() {
