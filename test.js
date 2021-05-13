@@ -1,4 +1,4 @@
-import { base64decode, base64encode, decodeToken, extractOT } from "./util.js"
+import { base64decode, base64encode, decodeToken, encodeToken, extractOT } from "./util.js"
 
 function assert(a, b) {
     console.log(a, b)
@@ -25,6 +25,12 @@ function test_decodeToken() {
     assert(isSubdomain, true)
 }
 
+function test_encodeToken() {
+    const expected = "ArSxvrfZ5EuQwmLLygXLeOO+U8YwgKmylzybnDThaDjzKW/3X98oWOCjtLmNm4Ea6a83sFRlzl9pyYovLr+fsw4AAABkeyJvcmlnaW4iOiJodHRwczovL2xhYnMuanhjay5pbzo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MDg4NzgyOTcsImlzU3ViZG9tYWluIjp0cnVlfQ=="
+    const actual = encodeToken(decodeToken(expected))
+    assert(actual, expected)
+}
+
 function test_extractOT() {
     const result = extractOT([
         { name: 'origin-trial', value: 'token-a' },
@@ -43,5 +49,6 @@ function test_extractOT() {
 ;[
     test_base64decode,
     test_decodeToken,
+    test_encodeToken,
     test_extractOT,
 ].forEach((test_case) => test_case())

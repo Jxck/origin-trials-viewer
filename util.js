@@ -20,6 +20,17 @@ export function decodeToken(token) {
     return { version, signature, length, payload }
 }
 
+export function encodeToken(token) {
+    const payload = new TextEncoder().encode(JSON.stringify(token.payload))
+    const buf = new Uint8Array(1 + 64 + 4 + payload.length)
+    const view = new DataView(buf.buffer)
+    view.setUint8(0, token.version)
+    buf.set(token.signature, 1)
+    view.setUint32(65, payload.length)
+    buf.set(payload, 69)
+    return base64encode(buf)
+}
+
 export function extractOT(responseHeaders = []) {
     return responseHeaders
         // filter 'Origin-Trial' header only
