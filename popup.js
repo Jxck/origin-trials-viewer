@@ -49,7 +49,7 @@ function displayToken(token) {
     $error.querySelector('.raw-token + dd').textContent = token.value
     $('#tokens').appendChild($error)
   } finally {
-    $('#no-token').remove()
+    $('#no-token')?.remove()
   }
 }
 
@@ -60,11 +60,11 @@ function extractOT(responseHeaders = []) {
     // split multiple token to array
     .flatMap(({ value }) => value.split(',').map(item => item.trim()))
     // make each token to tuple with type
-    .map((value) => ({ type: 'header', value }))
+    .map((value) => ({ type: 'HTTP Header', value }))
 }
 
-chrome.tabs.executeScript({ file: 'tab.js' }, ([metaTokens]) => {
-  metaTokens.forEach(displayToken)
+chrome.tabs.executeScript({ file: 'tab.js' }, ([tokens]) => {
+  tokens.forEach(displayToken)
 })
 
 chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
