@@ -6,7 +6,7 @@ const filters = {
 // we need 'var' for global scope
 var headers = {}
 
-chrome.webRequest.onHeadersReceived.addListener(function (details) {
+chrome.webRequest.onHeadersReceived.addListener((details) => {
   const { tabId, frameId } = details
   headers[tabId] = headers[tabId] || {}
   headers[tabId][frameId] = headers[tabId][frameId] || {}
@@ -14,8 +14,7 @@ chrome.webRequest.onHeadersReceived.addListener(function (details) {
 }, filters, ["responseHeaders"])
 
 // delete persisted headers when a tab is removed
-chrome.tabs.onRemoved.addListener(function (tabId, removeInfo) {
-  console.log(removeInfo)
+chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
   delete headers[tabId]
 })
 

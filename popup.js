@@ -46,10 +46,10 @@ chrome.tabs.executeScript({ file: 'tab.js' }, ([tokens]) => {
   tokens.forEach(displayToken)
 })
 
-chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => {
   const tabId = tabs[0].id
   const tabHeaders = chrome.extension.getBackgroundPage().headers[tabId]
-  chrome.webNavigation.getAllFrames({ tabId }, function (framesInfo) {
+  chrome.webNavigation.getAllFrames({ tabId }, (framesInfo) => {
     framesInfo.flatMap(({ frameId }) => {
       const frameHeaders = tabHeaders[frameId]
       return extractOT(frameHeaders?.response?.responseHeaders)
