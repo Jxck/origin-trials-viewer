@@ -1,5 +1,5 @@
 
-import {decodeToken, extractOT} from "./util.js"
+import { decodeToken, extractOT } from "./util.js"
 
 function displayToken(token) {
   const $ = document.querySelector.bind(document)

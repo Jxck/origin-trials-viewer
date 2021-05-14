@@ -41,7 +41,7 @@ app.get('/test-frame.html', (req, res) => {
         }
     }
     res.setHeader('origin-trial', encodeToken(token))
-     res.sendFile(path.join(dirname, '/test-frame.html'))
+    res.sendFile(path.join(dirname, '/test-frame.html'))
 })
 
 app.get('/util.js', (req, res) => {

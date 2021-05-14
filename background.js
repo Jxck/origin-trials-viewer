@@ -1,10 +1,10 @@
 const filters = {
   urls: ["<all_urls>"],
   types: ["main_frame", "sub_frame"]
-};
+}
 
 // we need 'var' for global scope
-var headers = {};
+var headers = {}
 
 chrome.webRequest.onHeadersReceived.addListener(function (details) {
   const { tabId, frameId } = details
