@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "scripts": {
     "build": "git archive HEAD --output=build.zip",
-    "test": "node test-server.js"
+    "start": "node test-server.js",
+    "test": "node test.js"
   },
   "repository": {
     "type": "git",
