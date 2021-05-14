@@ -3,32 +3,33 @@ const filters = {
   types: ["main_frame", "sub_frame"]
 }
 
-// we need 'var' for global scope
-var headers = {}
+// tabId => frameId => response
+globalThis.headers = new Map()
 
-chrome.webRequest.onHeadersReceived.addListener((details) => {
-  const { tabId, frameId } = details
-  headers[tabId] = headers[tabId] || {}
-  headers[tabId][frameId] = headers[tabId][frameId] || {}
-  headers[tabId][frameId].response = details
+chrome.webRequest.onHeadersReceived.addListener((response) => {
+  const { tabId, frameId } = response
+  if (headers.has(tabId) === false) headers.set(tabId, new Map())
+  headers.get(tabId).set(frameId, response)
 }, filters, ["responseHeaders"])
 
 // delete persisted headers when a tab is removed
 chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-  delete headers[tabId]
+  headers.delete(tabId)
 })
 
 // on navigation, check which frames still exist and delete persisted headers
 // for frames which do not exist anymore
-chrome.webNavigation.onCompleted.addListener((details) => {
-  const { tabId } = details
+chrome.webNavigation.onCompleted.addListener((response) => {
+  const { tabId } = response
   chrome.webNavigation.getAllFrames({ tabId }, (framesInfo) => {
-    const frameIds = framesInfo.map(({ frameId }) => frameId)
-    const headersForTab = headers[tabId]
-    if (headersForTab) {
-      const asArray = Object.entries(headersForTab)
-      const filteredArray = asArray.filter(([frameId, response]) => frameIds.includes(Number(frameId)))
-      headers[tabId] = Object.fromEntries(filteredArray)
+    if (headers.has(tabId)) {
+      const frameIds = framesInfo.map(({ frameId }) => frameId)
+      const frameHeaders = headers.get(tabId)
+      frameHeaders.forEach((value, key) => {
+        if (frameIds.includes(key) === false) {
+          frameHeaders.delete(key)
+        }
+      })
     }
   })
 }, filters)
