@@ -10,4 +10,4 @@ There are two ways to install this extension:
 - Download or clone the code from this repo and [load the unpacked extension](https://developer.chrome.com/docs/extensions/mv3/getstarted/#unpacked). Use this method if you plan to modify the code.
 
 
-<img width="1280" height="800" alt="Screenshot of Origin Trial Viewer" src="./img/demo.png">
+<img width="1280" alt="Screenshot of Origin Trial Viewer" src="./img/demo.png">
